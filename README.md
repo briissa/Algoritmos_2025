@@ -1,2 +1,2 @@
 # Algoritmos_2025
-todo lo trabajado en la materia
+En este repo voy a subir todos los ejercicos que el profesor pide entregar.
