@@ -114,4 +114,4 @@ print()
 
 #en este barrdio primero muestra los id y despues los nombres 
 star_wars_tree_id.in_order()
-print('se cargo en el repo')
+print()

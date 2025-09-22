@@ -1,127 +1,81 @@
 from typing import Any, Optional
-from queue_ import Queue_   #corroborar esto, que sean los correctos
-
+from queue_ import Queue_
 
 class BinaryTree:
 
     class __nodeTree:
-        """ este es el nodo dentro del arbol binario"""
-        def __init__(self, value: Any, other_values: Optional[Any]= None):
+
+        def __init__(self, value: Any, other_values: Optional[Any] = None):
             self.value = value
             self.other_values = other_values
             self.left = None
             self.right = None
-            self.hight = 0
+            self.height = 0
 
-    """inicializamos la clase arbol"""
     def __init__(self):
         self.root = None
 
-
-
-
-    """metodo insertar"""
-    def insert(self, value: Any, other_values : Optional[Any]= None):
-        print(f'insertar value {value}')
-
-        """esta es una funcion recursiva, donde chequeaba si la raiz era vacia(inserta ahi),
-          en caso de no serlo evaluaba si tenia que ir a la izq o derecha  (siempre inserta una hoja)""" 
+    def insert(self, value: Any, other_values: Optional[Any] = None):
         def __insert(root, value, other_values):
             if root is None:
-                print('lugar libre insertar raiz')
                 return BinaryTree.__nodeTree(value, other_values)
             elif value < root.value:
-                print(f'vamos a la izquierda ->padre {root.value}')
                 root.left = __insert(root.left, value, other_values)
             else:
-                print(f'vamos a la derecha ->padre {root.value}')
                 root.right = __insert(root.right, value, other_values)
 
-            root = self.auto_balance(root) #veriifcar 
-            self.update_hight(root)
+            root = self.auto_balance(root)
+            self.update_height(root)
 
             return root
-        
+
         self.root = __insert(self.root, value, other_values)
 
-
-
-
-
-
-    """los barridos que tenemos son: inorden (deberia devolverme los elementos en orden descendente), posorden (deberia devolverme los elementos ord de manera ascendente) y preorden"""
-
-    def in_order(self):
-        """recorrido inorden"""
-        def __in_order(root):
-            if root is not None:
-                print("hoja no vacia")
-                print("me voy a la izquierda")
-                __in_order(root.left)
-                print("nodo actual",root.value)
-                print("me voy a la derecha")
-                __in_order(root.right)
-            else:
-                print("hoja vacia")
-        if self.root is not None:
-            __in_order(self.root)
-
-
-    """
-    la logica del barrido es muy simple: me fijo si tengo valores en la raiz donde estoy parado actualmente,
-    si tengo valor, me voy a la izq (con la llamada recursiva para que repita el proceso), muestra el valor y me voy a la derecha.
-
-    """
-
-
-    def post_order(self):  #el chat me dice que no esta bien hecha
-        """recorrido posorden"""
-        def __post_order(root):
-
-            "este es el mismo arbol que el anterior, solo qeu en el primero me voy a ala derech y dsp a la izq"
-            if root is not None:
-                __post_order(root.right)
-                print(root.value)
-                __post_order(root.left)
-        if self.root is not None:
-            __post_order(self.root)
-
-
     def pre_order(self):
-        """recorrido preorden"""
         def __pre_order(root):
             if root is not None:
-                print(root.value, root.other_values, root.hight)
+                print(root.value, root.other_values, root.height)
                 __pre_order(root.left)
                 __pre_order(root.right)
+
         if self.root is not None:
             __pre_order(self.root)
 
-    """ Este lo que hace el mostrar el valor, luego irse para la izquierda 
-        y despues para la derecha.
-    """
+    def in_order(self):
+        def __in_order(root):
+            if root is not None:
+                __in_order(root.left)
+                print(root.value, root.other_values)
+                __in_order(root.right)
 
+        if self.root is not None:
+            __in_order(self.root)
 
+    #lo corrijo porque me tira error el chat 
+    def post_order(self):
+        def __post_order(root):
+            if root is not None:
+                __post_order(root.left)               
+                __post_order(root.right)
+                print(root.value)
 
-    "VAMOS A HACER LA BUSQUEDA"
-    def search (self, value: Any) -> __nodeTree:
-        def __search (root, value):
-            if root is not None :
+        if self.root is not None:
+            __post_order(self.root)
+
+    def search(self, value: Any) -> __nodeTree:
+        def __search(root, value):
+            if root is not None:
                 if root.value == value:
-                    "en esta parte hago lo que me pide el ejercicio"
-                    print("valor encontrado")
                     return root
                 elif root.value > value:
-                    print("me voy a buscar a la izq")
                     return __search(root.left, value)
                 else:
-                    print("me voy a buscar a la derch")
                     return __search(root.right, value)
+
         aux = None
         if self.root is not None:
             aux = __search(self.root, value)
         return aux
-    
 
     def proximity_search(self, value: Any) -> __nodeTree:
         def __search(root, value):
@@ -137,7 +91,6 @@ class BinaryTree:
         if self.root is not None:
             aux = __search(self.root, value)
         return aux
-
 
     def delete(self, value: Any):
         def __replace(root):
@@ -161,14 +114,14 @@ class BinaryTree:
                     if root.left is None:
                         root = root.right
                     elif root.right is None:
-                        root = root.left
+                        root.right = root.left
                     else:
                         root.left, replace_node = __replace(root.left)
                         root.value = replace_node.value
                         root.other_values = replace_node.other_values
 
                 root = self.auto_balance(root)
-                self.update_hight(root)
+                self.update_height(root)
             return root, delete_value, deleter_other_values
 
         delete_value =  None
@@ -176,11 +129,10 @@ class BinaryTree:
         if self.root is not None:
             self.root, delete_value, deleter_other_values = __delete(self.root, value)
         
-        return delete_value, deleter_other_values  
-
-
+        return delete_value, deleter_other_values
+    
     def by_level(self):
-        tree_queue = Queue()
+        tree_queue = Queue_()
         if self.root is not None:
             tree_queue.arrive(self.root)
 
@@ -190,19 +142,19 @@ class BinaryTree:
                 if node.left is not None:
                     tree_queue.arrive(node.left)
                 if node.right is not None:
-                    tree_queue.arrive(node.right)  
+                    tree_queue.arrive(node.right)
 
-    def hight(self, root):
+    def height(self, root):
         if root is None:
             return -1
         else:
-            return root.hight
+            return root.height
 
-    def update_hight(self, root):
+    def update_height(self, root):
         if root is not None:
-            alt_left = self.hight(root.left)
-            alt_right = self.hight(root.right)
-            root.hight = max(alt_left, alt_right) + 1
+            alt_left = self.height(root.left)
+            alt_right = self.height(root.right)
+            root.height = max(alt_left, alt_right) + 1
 
     def simple_rotation(self, root, control):
         if control: # RS Right
@@ -214,8 +166,8 @@ class BinaryTree:
             root.right = aux.left
             aux.left = root
 
-        self.update_hight(root)
-        self.update_hight(aux)
+        self.update_height(root)
+        self.update_height(aux)
         root = aux
         return root
 
@@ -231,22 +183,22 @@ class BinaryTree:
 
     def auto_balance(self, root):
         if root is not None:
-            if self.hight(root.left) - self.hight(root.right) == 2:
-                if self.hight(root.left.left) >= self.hight(root.left.right):
+            if self.height(root.left) - self.height(root.right) == 2:
+                if self.height(root.left.left) >= self.height(root.left.right):
                     # print("RS RIGHT")
                     root = self.simple_rotation(root, True)
                 else:
                     # print("RD RIGHT")
                     root = self.double_rotation(root, True)
-            if self.hight(root.right) - self.hight(root.left) == 2:
-                if self.hight(root.right.right) >= self.hight(root.right.left):
+            if self.height(root.right) - self.height(root.left) == 2:
+                if self.height(root.right.right) >= self.height(root.right.left):
                     # print("RS LEFT")
                     root = self.simple_rotation(root, False)
                 else:
                     # print("RD LEFT")
                     root = self.double_rotation(root, False)
         return root
-        #a partir de estos son funciones que hacemos para resolver ejercicios particulares.
+
     def villain_in_order(self):
         def __villain_in_order(root):
             if root is not None:
@@ -287,60 +239,123 @@ class BinaryTree:
 
 
         __divide_tree(self.root, arbol_h, arbol_v)
+    
+    def in_order_height(self):
+        def __in_order_height(root):
+            if root is not None:
+                __in_order_height(root.left)
+                if root.other_values['height'] > 100:
+                    print(root.value, root.other_values['height'])
+                __in_order_height(root.right)
+
+        if self.root is not None:
+            __in_order_height(self.root)
+    
+    def in_order_weight(self):
+        def __in_order_weight(root):
+            if root is not None:
+                __in_order_weight(root.left)
+                if root.other_values['weight'] < 75:
+                    print(root.value, root.other_values['weight'])
+                __in_order_weight(root.right)
+
+        if self.root is not None:
+            __in_order_weight(self.root)
 
 arbol = BinaryTree()
 arbol_heroes = BinaryTree()
 arbol_villanos = BinaryTree()
 
-    
-
-
-                
-"para usarlo el profe hizo: "
-" pos= arbol.search(22)"
-"print( pos.value, pos.left, pos.right.value )" 
-
-"lo que muestra es: valor encontrado / 22 none 27"
-arbol = BinaryTree() 
-#arbol.insert(19)
-#arbol.insert(7)
-#arbol.insert(11)
-#arbol.insert(22)
-#arbol.in_order()
 
 
 
-"las opciones son : que sea una hoja, que el nodo tenga 1 hijo y que el nodo tenga 2 hijos (se va por la izq o derecha)"
+# print()K
+# arbol.update_hight(arbol.root.left.left)
+# print()
+# arbol.update_hight(arbol.root.left)
+# print()
+# arbol.update_hight(arbol.root)
+# print()
+# arbol.pre_order()
+
+# arbol.insert('F', 'f')
+# arbol.insert('B', 'b')
+# arbol.insert('K', 'k')
+# arbol.insert('H', 'h')
+# arbol.insert('J', 'j')
+# arbol.insert('E', 'e')
+# arbol.insert('B')
+# arbol.insert('V')
+# arbol.pre_order()
+# print()
 
 
-# es una eliminacion recursiva 
-def delete (self, value: Any):
+# for i in range(1, 16):
+#     arbol.insert(i)
 
-    #esta funcion la vamos a usar para encontrar el nodo que va a reemplazar al que queremos eliminar 
-    def __replace (root):
-        if root.right is None:
-            return root
-        elif root.left is None:
-            return root
+# arbol.pre_order()
 
+# if pos is not None:
+#     arbol.delete('F')
+#     arbol.insert('C', 'c')
 
-    def __delete (root, value):
-
-
-        #la condicion de fin es que el arbol este vacio 
-        if root is None:
-            if value < root.value:
-                __delete (root.value, value)
-
-            elif value > root.value:
-                __delete (root.value, value)
+# delete_value, deleter_other_values = arbol.delete('K')
+# if delete_value is not None:
+#     print(delete_value, deleter_other_values)
 
 
-#si la izq y la derecha son none significa que tiene a los dos hijos 
-#si no es mayor ni menor, significa que lo encontramos 
+# arbol.in_order()
+# # delete_value = arbol.delete('F')
 
-#se determina que es el mayor cuando a su derecha ya no hay nada (porque cda vez que el numero es mayor, va la la derecha)
-#si es que hay algo en la derecha, cicla todas las veces hasta que no haya mas nada en la derecha (recursividad)
+# # if delete_value is not None:
+# #     print(f'valor eliminado {delete_value}')
+# # else:
+# #     print('valor no encontrado')
+# # print()
+# arbol.by_level()
 
-#en una parte devuelve none porque puede ser que no este 
-# delete_value = none 
+
+# # arbol.insert(11)
+
+# # pos = arbol.search(19)
+# # print(pos)
+# arbol.in_order()
+
+# from super_heroes_data import superheroes
+
+# for super_hero in superheroes:
+#     arbol.insert(super_hero['name'], super_hero)
+
+
+# arbol.divide_tree(arbol_heroes, arbol_villanos)
+
+# bosque = [arbol_heroes, arbol_villanos]
+
+# for tree in bosque:
+#     tree.in_order()
+#     print()
+
+# arbol.proximity_search('Dr')
+# name = input('ingrese nombre para modificar: ')
+# value, other_value = arbol.delete(name)
+
+# if value is not None:
+#     fix_name = input('ingrese el nuevo nombre: ')
+#     other_value['name'] = fix_name
+#     arbol.insert(fix_name, other_value) 
+
+# print()
+# arbol.proximity_search('Dr')
+# print()
+# pos = arbol.search('Dr Strange')
+# if pos is not None:
+#     print(pos.value, pos.other_values)
+
+# print(arbol.count_heroes())
+
+# arbol.villain_in_order()
+
+# print()
+# pos = arbol.search("Thanos")
+# if pos is not None:
+#     print(pos.value, pos.other_values)
